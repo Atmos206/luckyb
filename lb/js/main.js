@@ -69,6 +69,7 @@ class LuckyBastard {
         this.selectedCards = [];
         this.players = [];
         this.currentPlayerIndex = 0;
+        this.previousCardPlayer = null;
         this.winOrder = [];
         this.gameOver = false;
         this.playCount = 0;
@@ -77,7 +78,7 @@ class LuckyBastard {
             'Joe T',
             'Jake',
             'Mike',
-            'BJ',
+            //'BJ',
             'Chelsea',
             'Scotty'
         ]
@@ -137,84 +138,84 @@ class LuckyBastard {
 
         console.log("Start card is: " + startCard.display + ' of ' + startCard.suit);
 
+        this.players[this.currentPlayerIndex].startPlayerTurn();
         if (this.players[this.currentPlayerIndex].isNPC) {
             this.playNPC();
-        } else {
-            this.players[this.currentPlayerIndex].startPlayerTurn();
         }
     }
 
-    playNPC(previousWasMultiple) {
+    playNPC() {
         let currentPlayer = this.players[this.currentPlayerIndex];
-        let cardPlayed = false;
-        let bombed = false;
+        let turnOver = true;
 
-        if (!previousWasMultiple) {
-            currentPlayer.startPlayerTurn();            
-        }
-
+        // Play Hand or Up
         if (currentPlayer.playerCards.hand.length > 0 || currentPlayer.playerCards.up.length > 0) {
-            let playerCards = (currentPlayer.playerCards.hand.length > 0) ? currentPlayer.playerCards.hand : currentPlayer.playerCards.up
-            let playSuccess = false;
-            for (var i = 0; i < playerCards.length; i++) {
-                let card = playerCards[i];
-                if (currentPlayer.cardCheck(card, previousWasMultiple) && card.value != 2 && card.value != 9 && card.value != 10) {
-                    currentPlayer.playCard(card, playerCards);
-                    cardPlayed = card;
-                    playSuccess = true;
-                    break;
-                }
-            }
-            if (!playSuccess) {
-                for (var i = 0; i < playerCards.length; i++) {
-                    let card = playerCards[i];
-                    if (currentPlayer.cardCheck(card, previousWasMultiple) && (card.value == 2 || card.value == 9 || card.value == 10)) {
-                        currentPlayer.playCard(card, playerCards);
-                        cardPlayed = card;
-                        playSuccess = true;
-                        break;
-                    }
-                }
-            }
-            if (!playSuccess) {
-                console.log('Player "' + currentPlayer.name + '" picks up the play stack. (' + this.playCards.length +' cards)');
-                currentPlayer.playerCards.hand = currentPlayer.playerCards.hand.concat(this.playCards);
-                this.playCards = [];
-            }
-        }
+            let isHand = currentPlayer.playerCards.hand.length > 0;
+            let stack = (currentPlayer.playerCards.hand.length > 0) ? currentPlayer.playerCards.hand : currentPlayer.playerCards.up
+            
+            // Get first playable card
+            let playCard = currentPlayer.getFirstPlayableRegular(stack);
+            if (!playCard) playCard = currentPlayer.getFirstPlayablePower(stack);
 
-        if (currentPlayer.playerCards.hand.length == 0 && currentPlayer.playerCards.up.length == 0 && currentPlayer.playerCards.down.length > 0) {
-            let playerCards = currentPlayer.playerCards.down;
-            let randomCard = playerCards[Math.floor(Math.random() * playerCards.length)];
-            if (currentPlayer.cardCheck(randomCard, previousWasMultiple)) {
-                currentPlayer.playCard(randomCard, playerCards);
-                cardPlayed = randomCard;
+            // Check if playable card found and play or pick up
+            if (playCard) {
+                turnOver = !currentPlayer.playCard(playCard, stack);
             } else {
-                console.log('Player "' + currentPlayer.name + '" picks up the play stack. (' + this.playCards.length +' cards)');
-                currentPlayer.playerCards.hand = currentPlayer.playerCards.hand.concat(this.playCards);
-                currentPlayer.playerCards.hand.push(randomCard);
-                playerCards.splice(playerCards.indexOf(randomCard), 1);
-                this.playCards = [];
+                if (isHand) {
+                    currentPlayer.pickUp();
+                } else {
+                    currentPlayer.pickUp(playCard, stack);
+                }
+            }
+        } else if (currentPlayer.playerCards.hand.length == 0 && currentPlayer.playerCards.up.length == 0 && currentPlayer.playerCards.down.length > 0) {
+            let stack = currentPlayer.playerCards.down;
+            let randomCard = stack[Math.floor(Math.random() * stack.length)];
+            if (currentPlayer.cardCheck(randomCard)) {
+                turnOver = !currentPlayer.playCard(randomCard, stack);
+            } else {
+                currentPlayer.pickUp(randomCard, stack);
             }
         }
 
+        if (!turnOver && !this.gameOver) {
+            currentPlayer.draw(3);
+            this.playNPC();
+        } else if (!currentPlayer.checkNoCards() && !this.gameOver ) {
+            currentPlayer.endPlayerTurn();
+        }
+    }
+
+    getCurrentPlayer() {
+        return this.players[this.currentPlayerIndex];
+    }
+
+    clearPlayCards() {
+        this.playCards = [];
+    }
+
+    burnPlayCards() {
+        this.burnCards = this.burnCards.concat(this.playCards);
+        this.clearPlayCards();
+    }
+
+    checkQuads() {
         if (this.playCards.length > 3
             && this.playCards[this.playCards.length-2].value == this.playCards[this.playCards.length-1].value 
             && this.playCards[this.playCards.length-3].value == this.playCards[this.playCards.length-1].value 
             && this.playCards[this.playCards.length-4].value == this.playCards[this.playCards.length-1].value) {
-                console.log('Quad bomb! Play stack to the burn pile.');
-                this.burnCards = this.burnCards.concat(this.playCards);
-                this.playCards = [];
-                bombed = true;
+                console.log('BOMB: Quads played. Play stack to the burn pile.');
+                this.burnPlayCards();
+                return true;
             }
+        return false;
+    }
 
-        let hasMultiples = currentPlayer.checkMultiples(cardPlayed);
-        if (cardPlayed && (cardPlayed.value == 10 || hasMultiples || bombed) && !currentPlayer.checkNoCards()) {
-            currentPlayer.draw(3);
-            this.playNPC(hasMultiples);
-        } else {
-            currentPlayer.endPlayerTurn();
-        }
+    setPreviousCardPlayer(player) {
+        this.previousCardPlayer = player;
+    }
+
+    previousWasPlayer(player) {
+        return this.previousCardPlayer == player;
     }
 }
 
@@ -281,8 +282,41 @@ class Player {
         return hasMultiples;
     }
 
+    pickUp(card, stack) {
+        console.log('Player "' + this.name + '" picks up the play stack. (' + this.game.playCards.length +' cards)');
+        this.playerCards.hand = this.playerCards.hand.concat(this.game.playCards);
+        if (card && stack) {
+            // If picking up a card from up or down stack
+            this.playerCards.hand.push(card);
+            stack.splice(stack.indexOf(card), 1);
+        }
+        this.game.clearPlayCards();
+    }
+
     checkNoCards() {
         return this.playerCards.hand == 0 && this.playerCards.up == 0 && this.playerCards.down == 0;
+    }
+
+    getFirstPlayablePower(stack) {
+        let card = null;
+        for (var i = 0; i < stack.length; i++) {
+            if (this.cardCheck(stack[i]) && (stack[i].value == 2 || stack[i].value == 9 || stack[i].value == 10)) {
+                card = stack[i];
+                break;
+            }
+        }
+        return card;
+    }
+
+    getFirstPlayableRegular(stack) {
+        let card = null;
+        for (var i = 0; i < stack.length; i++) {
+            if (this.cardCheck(stack[i]) && stack[i].value != 2 && stack[i].value != 9 && stack[i].value != 10) {
+                card = stack[i];
+                break;
+            }
+        }
+        return card;
     }
 
     draw(endCount) {
@@ -315,38 +349,52 @@ class Player {
             }
             console.log('Game completed in ' + this.game.playCount + ' turns.');
         } else if (this.game.players[this.game.currentPlayerIndex].isNPC) {
+            this.game.players[this.game.currentPlayerIndex].startPlayerTurn();
             this.game.playNPC();
+        } else {
+            this.game.players[this.game.currentPlayerIndex].startPlayerTurn();
         }
     }
 
     playCard(card, stack) {
+        let bombed = false;
+        let hasMultiples = false;
+
         if (this.cardCheck(card)) {
-            console.log('Player "' + this.name + '" plays: ' + card.display + ' of ' + card.suit + ' -- H' + this.playerCards.hand.length + ' U' + this.playerCards.up.length +' D' + this.playerCards.down.length);
+            console.log('PLAY: "' + this.name + '" plays: ' + card.display + ' of ' + card.suit + ' -- H' + this.playerCards.hand.length + ' U' + this.playerCards.up.length +' D' + this.playerCards.down.length);
+            
             this.game.playCards.push(card);
             stack.splice(stack.indexOf(card), 1);
-            if (this.game.playCards.length > 1 && this.game.playCards[this.game.playCards.length - 1].value < this.game.playCards[this.game.playCards.length - 2].value && this.game.playCards[this.game.playCards.length - 1].value != 2 && this.game.playCards[this.game.playCards.length - 1].value != 9 && this.game.playCards[this.game.playCards.length - 1].value != 10 && this.game.playCards[this.game.playCards.length - 2].value != 9) {
-                console.log('POSSIBLE ISSUE?');
-                console.log('Card Played: ' + this.game.playCards[this.game.playCards.length - 1].display);
-                console.log('Previous Played: ' + this.game.playCards[this.game.playCards.length - 2].display);
-            }
+            this.game.setPreviousCardPlayer(this);
+            
             if (card.value == 10) {
-                this.game.burnCards = this.game.burnCards.concat(this.game.playCards);
-                this.game.playCards = [];
+                this.game.burnPlayCards();
+                bombed = true;
+            } else {
+                bombed = this.game.checkQuads();
+            }
+
+            hasMultiples = this.checkMultiples(card);
+
+            if (this.checkNoCards()) {
+                this.endPlayerTurn();
                 return false;
             }
+            
             this.draw(3);
-            return true;
+            return bombed || hasMultiples;
         } else {
             return false;
         }
     }
 
-    cardCheck(cardB, previousWasMultiple) {
+    cardCheck(cardB) {
         let cardA = (this.game.playCards.length) ? this.game.playCards[this.game.playCards.length - 1] : false;
-        // Free play or power card, card can be played
-        if (cardA && previousWasMultiple && cardA.value != cardB.value) {
+        // Multiple check
+        if (cardA && this.game.previousWasPlayer(this) && cardA.value != cardB.value && cardB.value != 10) {
             return false;
         }
+        // Free play or power card, card can be played
         if (!cardA || cardB.value == 2 || cardB.value == 9 || cardB.value == 10) {
             return true;
         } else {
@@ -367,7 +415,7 @@ class Player {
     }
 }
 
-var game = new LuckyBastard(false, 4);
+var game = new LuckyBastard('BJ', 4);
 
 game.start();
 
