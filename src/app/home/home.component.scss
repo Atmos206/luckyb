@@ -7,3 +7,152 @@ q {
   font-size: 1.2rem;
   quotes: "« " " »";
 }
+
+.card-container {
+  position: relative;
+  display: inline-block;
+  font-size: 7px;
+  margin-right: 5px;
+}
+
+.main-container {
+  position: relative;
+  display: flex;
+}
+
+.players-container {
+  position: relative;
+  flex-grow: 0;
+}
+
+.game-container {
+  position: relative;
+  flex: none;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.stack-container {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  padding: 10px;
+  background-color: #ececec;
+  margin-top: 10%;
+  border-radius: 10px;
+}
+
+.stack-container .cards-remaining {
+  float: none;
+  text-align: center;
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.deck-container {
+  position: relative;
+  display: inline-block;
+}
+
+.deck-container .card-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.deck-container .card-container:first-child {
+  position: relative;
+}
+
+.player-row {
+  position: relative;
+  display: block;
+  padding: 5px 10px;
+  background-color: #ececec;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.player-row.active {
+  background-color: #aff0bf;
+}
+
+.cards-remaining {
+  position: relative;
+  display: inline-block;
+  color: #9c4d0b;
+  float: right;
+}
+
+.upcards {
+  position: absolute;
+  z-index: 2;
+}
+
+.downcards {
+  position: relative;
+  display: block;
+  z-index: 1;
+  top: 5px;
+  left: 10px;
+}
+
+.player-name {
+  position: relative;
+  display: block;
+  font-size: 16pt;
+  font-weight: 600;
+}
+
+.self-container {
+  position: relative;
+  text-align: center;
+  display: block;
+}
+
+.self-container .player-name {
+  position: relative;
+  font-size: 28pt;
+}
+
+.self-cards {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.self-player {
+  position: relative;
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #ececec;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+.self-player.active {
+  background-color: #aff0bf;
+}
+
+.end-turn-btn {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 30px;
+  font-weight: 600;
+  background-color: #9c4d0b;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 10px;
+  border: 1px solid #4b2506;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.end-turn-btn.disabled {
+  background-color: #ececec;
+  border: 1px solid #ececec;
+}

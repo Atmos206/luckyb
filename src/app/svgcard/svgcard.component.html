@@ -1,0 +1,56 @@
+<div
+  class="card md-whiteframe-3dp"
+  [ngClass]="{ 'md-whiteframe-15dp': vm.hoverCard }"
+  *ngIf="vm.card != null && !vm.card.hideValue"
+  (mouseenter)="vm.toggleHover()"
+  (mouseleave)="vm.toggleHover()"
+  (click)="vm.toggleBackside()"
+>
+  <div class="card-{{ vm.card.rank.name }}" [ngStyle]="{ color: vm.card.suit.color }">
+    <div class="corner top">
+      <span class="number">{{ vm.card.rank.symbol }}</span> <span>{{ vm.card.suit.symbol }}</span>
+    </div>
+    <span class="suit top_left" *ngIf="[4, 5, 6, 7, 8, 9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit top_center" *ngIf="[2].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit top_right" *ngIf="[4, 5, 6, 7, 8, 9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit middle_top_left" *ngIf="[9, 10].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_top_center" *ngIf="[10].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_left" *ngIf="[6, 7, 8].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_top" *ngIf="[7, 8].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_center" *ngIf="[3, 5, 9].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_top_right" *ngIf="[9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit middle_bottom" *ngIf="[8].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit middle_right" *ngIf="[6, 7, 8].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit bottom_left" *ngIf="[4, 5, 6, 7, 8, 9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit bottom_center" *ngIf="[2].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <span class="suit bottom_right" *ngIf="[4, 5, 6, 7, 8, 9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit middle_bottom_left" *ngIf="[9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit middle_bottom_center" *ngIf="[10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span>
+    <span class="suit middle_bottom_right" *ngIf="[9, 10].indexOf(vm.card.rank.value) > -1">{{
+      vm.card.suit.symbol
+    }}</span
+    ><span class="face middle_center" *ngIf="[11, 12, 13].indexOf(vm.card.rank.value) > -1"
+      ><img src="/assets/face-{{ vm.card.rank.name }}-{{ vm.card.suit.name }}.png"/></span
+    ><span class="suit middle_center" *ngIf="[14].indexOf(vm.card.rank.value) > -1">{{ vm.card.suit.symbol }}</span>
+    <div class="corner bottom">
+      <span class="number">{{ vm.card.rank.symbol }}</span> <span>{{ vm.card.suit.symbol }}</span>
+    </div>
+  </div>
+</div>
+<div class="card back" (click)="vm.toggleBackside()" *ngIf="vm.card != null && vm.card.hideValue">
+  <span class="middle_center"><img src="/assets/back.png"/></span>
+</div>

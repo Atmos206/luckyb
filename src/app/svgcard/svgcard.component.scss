@@ -1,0 +1,151 @@
+.cards {
+  font-size: 10px;
+}
+@media only screen and (max-width: 500px) {
+  .cards {
+    font-size: 5px;
+  }
+}
+.card {
+  float: left;
+  width: 16em;
+  height: 22.4em;
+  margin: 0 1.2em 1.2em 0;
+  position: relative;
+  z-index: 2;
+}
+.card.ng-enter {
+  -webkit-animation: flip 1s;
+  -moz-animation: flip 1s;
+  -ms-animation: flip 1s;
+  animation: flip 1s;
+}
+.card.noshadow {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.card.back img {
+  width: 16em;
+  height: 22.4em;
+  max-width: 100%;
+}
+.card .heart,
+.card .diamond {
+  color: #df0000;
+}
+.card .corner {
+  line-height: 1;
+  position: absolute;
+  text-align: center;
+}
+.card .corner span {
+  display: block;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+.card .corner .number {
+  font-size: 2em;
+  height: 1.92em/2;
+  line-height: 1.92em/2;
+}
+.card .corner.top {
+  left: 0.64em;
+  top: 0.96em;
+}
+.card .corner.bottom {
+  bottom: 0.96em;
+  right: 0.64em;
+}
+.card .card-ace span.suit.middle_center {
+  font-size: 10.24em;
+  left: 0.455172413793103em;
+  top: 0.593103448275862em;
+}
+.card .card-ten .corner .number {
+  font-size: 1.5em;
+}
+.card .face img {
+  position: absolute;
+  left: 2.56em;
+  top: 2.08em;
+  width: 10.8em;
+  height: 18.24em;
+}
+.card .suit {
+  font-size: 5.8em;
+  font-weight: normal;
+  width: 0.689655172413793em;
+  height: 0.786206896551724em;
+  line-height: 0.786206896551724em;
+  position: absolute;
+  text-align: center;
+}
+.card .suit.top_center {
+  left: 1.048275862068966em;
+  top: 0.331034482758621em;
+}
+.card .suit.top_left {
+  left: 0.413793103448276em;
+  top: 0.331034482758621em;
+}
+.card .suit.top_right {
+  right: 0.413793103448276em;
+  top: 0.331034482758621em;
+}
+.card .suit.middle_center {
+  left: 1.048275862068966em;
+  top: 1.517241379310345em;
+}
+.card .suit.middle_top {
+  left: 1.048275862068966em;
+  top: 0.96551724137931em;
+}
+.card .suit.middle_bottom {
+  bottom: 0.96551724137931em;
+  left: 1.048275862068966em;
+}
+.card .suit.middle_left {
+  left: 0.413793103448276em;
+  top: 1.517241379310345em;
+}
+.card .suit.middle_right {
+  right: 0.413793103448276em;
+  top: 1.517241379310345em;
+}
+.card .suit.middle_top_center {
+  left: 1.048275862068966em;
+  top: 0.827586206896552em;
+}
+.card .suit.middle_top_left {
+  left: 0.413793103448276em;
+  top: 1.103448275862069em;
+}
+.card .suit.middle_top_right {
+  right: 0.413793103448276em;
+  top: 1.103448275862069em;
+}
+.card .suit.middle_bottom_left {
+  bottom: 1.103448275862069em;
+  left: 0.413793103448276em;
+}
+.card .suit.middle_bottom_right {
+  bottom: 1.103448275862069em;
+  right: 0.413793103448276em;
+}
+.card .suit.middle_bottom_center {
+  bottom: 0.827586206896552em;
+  left: 1.048275862068966em;
+}
+.card .suit.bottom_center {
+  bottom: 0.331034482758621em;
+  left: 1.048275862068966em;
+}
+.card .suit.bottom_left {
+  bottom: 0.331034482758621em;
+  left: 0.413793103448276em;
+}
+.card .suit.bottom_right {
+  bottom: 0.331034482758621em;
+  right: 0.413793103448276em;
+}
